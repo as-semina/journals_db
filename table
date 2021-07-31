@@ -1,0 +1,122 @@
+CREATE TABLE издательство
+(
+  pid INT NOT NULL,
+  сайт VARCHAR NOT NULL,
+  название VARCHAR NOT NULL,
+  город VARCHAR NOT NULL,
+  PRIMARY KEY (pid)
+);
+
+CREATE TABLE тематика
+(
+  тематика VARCHAR NOT NULL,
+  tid INT NOT NULL,
+  PRIMARY KEY (tid)
+);
+
+CREATE TABLE пол
+(
+  sid CHAR(1) NOT NULL,
+  название VARCHAR NOT NULL,
+  PRIMARY KEY (sid)
+);
+
+CREATE TABLE журнал
+(
+  название VARCHAR NOT NULL,
+  jid INT NOT NULL,
+  год_начала_издания DATE NOT NULL,
+  импакт-фактор INT,
+  h-индекс INT,
+  переводная_версия CHAR(1) NOT NULL,
+  периодичность_издания INT NOT NULL,
+  pid INT NOT NULL,
+  PRIMARY KEY (jid),
+  FOREIGN KEY (pid) REFERENCES издательство(pid)
+);
+
+CREATE TABLE выпуск
+(
+  номер INT NOT NULL,
+  месяц INT NOT NULL,
+  год INT NOT NULL,
+  кол-во_страниц INT NOT NULL,
+  jid INT NOT NULL,
+  PRIMARY KEY (номер, jid),
+  FOREIGN KEY (jid) REFERENCES журнал(jid)
+);
+
+CREATE TABLE автор
+(
+  h-индекс INT,
+  Фамилия VARCHAR NOT NULL,
+  Имя VARCHAR NOT NULL,
+  Отчество VARCHAR NOT NULL,
+  aid INT NOT NULL,
+  sid CHAR(1) NOT NULL,
+  PRIMARY KEY (aid),
+  FOREIGN KEY (sid) REFERENCES пол(sid)
+);
+
+CREATE TABLE цитирования
+(
+  год_цитирования INT NOT NULL,
+  количество INT NOT NULL,
+  jid_1 INT NOT NULL,
+  цитируетjid_2 INT NOT NULL,
+  PRIMARY KEY (jid_1, цитируетjid_2),
+  FOREIGN KEY (jid_1) REFERENCES журнал(jid),
+  FOREIGN KEY (цитируетjid_2) REFERENCES журнал(jid)
+);
+
+CREATE TABLE язык_издания
+(
+  язык_издания VARCHAR NOT NULL,
+  jid INT NOT NULL,
+  PRIMARY KEY (язык_издания, jid),
+  FOREIGN KEY (jid) REFERENCES журнал(jid)
+);
+
+CREATE TABLE организация_автор
+(
+  название VARCHAR NOT NULL,
+  aid INT NOT NULL,
+  PRIMARY KEY (название, aid),
+  FOREIGN KEY (aid) REFERENCES автор(aid)
+);
+
+CREATE TABLE должность_автор
+(
+  название VARCHAR NOT NULL,
+  aid INT NOT NULL,
+  PRIMARY KEY (название, aid),
+  FOREIGN KEY (aid) REFERENCES автор(aid)
+);
+
+CREATE TABLE статья
+(
+  название VARCHAR NOT NULL,
+  язык VARCHAR NOT NULL,
+  страницы VARCHAR NOT NULL,
+  номер INT NOT NULL,
+  jid INT NOT NULL,
+  tid INT,
+  название VARCHAR NOT NULL,
+  номер INT NOT NULL,
+  jid INT NOT NULL,
+  PRIMARY KEY (название, номер, jid),
+  FOREIGN KEY (номер, jid) REFERENCES выпуск(номер, jid),
+  FOREIGN KEY (tid) REFERENCES тематика(tid),
+  FOREIGN KEY (название, номер, jid) REFERENCES статья(название, номер, jid)
+);
+
+CREATE TABLE статья_автор
+(
+  название VARCHAR NOT NULL,
+  номер INT NOT NULL,
+  jid INT NOT NULL,
+  aid INT NOT NULL,
+  PRIMARY KEY (название, номер, jid, aid),
+  FOREIGN KEY (название, номер, jid) REFERENCES статья(название, номер, jid),
+  FOREIGN KEY (aid) REFERENCES автор(aid)
+);
